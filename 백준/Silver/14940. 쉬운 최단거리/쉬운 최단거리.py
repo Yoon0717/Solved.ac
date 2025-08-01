@@ -4,38 +4,35 @@ input = sys.stdin.readline
 
 n, m = map(int, input().split())
 graph = []
+score = [[-1 for _ in range(m)] for _ in range(n)] # 출력용 (-1이면 아직 도달하지 않은 곳이거나(visited 필요 없음) 갈 수 없는 곳(-1 처리))
 
 for i in range(n):
   line = list(map(int, input().split()))
-  if 2 in line:
-    j = line.index(2)
-    start_i = i
-    start_j = j
+  for j in range(m):
+    if line[j] == 2:
+      start = (i, j)
+      score[i][j] = 0
   graph.append(line)
 
-start = (start_i, start_j)
-queue = deque([start])
-visited = set()
-visited.add(start)
+dx = [-1, 1, 0, 0]
+dy = [0, 0, -1, 1]
 
-score = [[0 for _ in range(m)] for _ in range(n)] # 최종 출력
-dy, dx = [0, 0, 1, -1], [1, -1, 0, 0]
+queue = deque([start])
 
 while queue:
   i, j = queue.popleft()
   for k in range(4):
-    next_i, next_j = i+dy[k], j+dx[k]
-    if (next_i >= 0 and next_i < n) and (next_j >=0 and next_j < m):
-      neighbor = (next_i, next_j)
-      if neighbor not in visited and graph[next_i][next_j]:
-        score[next_i][next_j] = score[i][j] + 1
-        queue.append(neighbor)
-        visited.add(neighbor)
+    ni, nj = i+dy[k], j+dx[k]
+    if 0 <= ni < n and 0 <= nj < m:
+      if graph[ni][nj] == 1 and score[ni][nj] == -1:
+        score[ni][nj] = score[i][j] + 1
+        queue.append((ni, nj))
 
 for i in range(n):
+  row = []
   for j in range(m):
-    if graph[i][j] == 1 and score[i][j] == 0:
-      score[i][j] = -1
-
-for s in score:
-  print(*s)
+    if graph[i][j] == 0:
+      row.append(0)
+    else:
+      row.append(score[i][j])
+  print(' '.join(map(str, row)))
