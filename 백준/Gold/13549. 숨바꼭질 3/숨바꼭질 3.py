@@ -1,28 +1,33 @@
+# 시작점이 0인 경우, 계속해서 0이 입력으로 들어감 -> 99%에서 틀림
+
+import sys
 from collections import deque
-n,k=map(int,input().split())
-limit=100001
-cnt=[0]*limit
-visited=[False]*limit
-def bfs(x,end):
-    queue=deque()
-    queue.append(x)
+input = lambda : sys.stdin.readline().rstrip()
 
-    while queue:
-        x=queue.popleft()
-        if x==end:return cnt[x]
-        if -1<x*2<limit and visited[x*2]==0 :
-            queue.appendleft(x*2)
-            cnt[x*2]=cnt[x]
-            visited[x*2]=True
-        if -1<x-1<limit and visited[x-1]==0 :
-            queue.append(x-1)
-            cnt[x-1]=cnt[x]+1
-            visited[x-1]=True
-        if -1<x+1<limit and visited[x+1]==0 :
-            queue.append(x+1)
-            cnt[x+1]=cnt[x]+1
-            visited[x+1]=True
+n, k = map(int, input().split())
+size = 100001
+dist = [float('inf')] * size
+dist[n] = 0
 
+def bfs(n, k):
+  q = deque([n])
+  while q:
+    cur = q.popleft()
+    if cur == k:
+      print(dist[cur])
+      return
+    
+    next = cur*2
+    if 0 <= next < size and dist[next] > dist[cur]:
+      dist[next] = dist[cur]
+      q.appendleft(next)
+    
+    for next in [cur-1, cur+1]:
+      if 0 <= next < size and dist[next] > dist[cur]+1:
+          dist[next] = dist[cur]+1
+          q.append(next)
 
-
-print(bfs(n,k))
+if n == k:
+  print(0)
+else:
+  bfs(n, k)
